@@ -3,7 +3,7 @@
 This program implements an Escrow contract to demonstrate the use of new Anchor 1.0.0
 - **Custom discriminators**: Discriminators of 1-byte are used to override the default 8-byte discriminators.
 
-The Escrow is a solana program which will hold on to the assets until a condition is met. There will be a user (`maker`) who defines the agreement conditions for the transaction: initiating the escrow and depositing a given amount of a given token (in this case, `amount_a` of `token_a`) to the vault owned by our program in exchange for an amount of tokens (in this case, `amount_b` of `token_b`). Now any user (`taker`) can take up their offer and deposit the amount expected by the maker and receive the tokens from the vault to their account atomically. So this is how we achieve a trustless conditional transfer.
+The Escrow is a solana program which will hold on to the assets until a condition is met. There will be a user (`maker`) who defines the agreement conditions for the transaction: initiating the escrow and depositing a given amount of a given token (in this case, `amount_a` of `mint_a`) to the vault owned by our program in exchange for an amount of tokens (in this case, `amount_b` of `mint_b`). Now any user (`taker`) can take up their offer and deposit the amount expected by the maker and receive the tokens from the vault to their account atomically. So this is how we achieve a trustless conditional transfer.
 
 ---
 
