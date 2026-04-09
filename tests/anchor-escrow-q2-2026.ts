@@ -13,6 +13,7 @@ import NodeWallet from "@anchor-lang/core/dist/cjs/nodewallet";
 import { BN } from "bn.js";
 import { randomBytes } from "crypto";
 import { ASSOCIATED_PROGRAM_ID } from "@anchor-lang/core/dist/cjs/utils/token";
+import { expect } from "chai";
 
 const commitment: Commitment = "confirmed";
 
@@ -146,6 +147,9 @@ describe("anchor-escrow-q2-2026", () => {
 
   it("Make!", async () => {
 
+    const initialMakerAtaABalance = await provider.connection.getTokenAccountBalance(makerAtaA);
+    console.log("initial Maker Ata A balance", initialMakerAtaABalance.value.amount);
+
     const tx = await program.methods.make(
       seed,
       new BN(1_000_000),
@@ -164,6 +168,11 @@ describe("anchor-escrow-q2-2026", () => {
     .rpc();
 
     await confirmTx(tx)
+
+    const finalVaultBalance = await provider.connection.getTokenAccountBalance(vault);
+    console.log("vault balance", finalVaultBalance.value.amount);
+    const finalMakerAtaABalance = await provider.connection.getTokenAccountBalance(makerAtaA);
+    console.log("Final Maker Ata A  balance", finalMakerAtaABalance.value.amount);
     console.log("make tx", tx);
 
   });
@@ -183,10 +192,15 @@ describe("anchor-escrow-q2-2026", () => {
     .rpc();
 
     await confirmTx(tx)
+    
+    expect(await provider.connection.getBalance(vault)).to.equal(0);
+    const vaultStateInfo = await provider.connection.getAccountInfo(vault);
+    expect(vaultStateInfo).to.be.null;
     console.log("Refund tx", tx);
   });
 
   it("Take!", async () => {
+
     const tx = await program.methods.take(
     ).accountsPartial({
       taker: taker.publicKey,
@@ -206,6 +220,10 @@ describe("anchor-escrow-q2-2026", () => {
     .rpc();
 
     await confirmTx(tx)
+
+    expect(await provider.connection.getBalance(vault)).to.equal(0);
+    const vaultStateInfo = await provider.connection.getAccountInfo(vault);
+    expect(vaultStateInfo).to.be.null;
     console.log("Take tx", tx);
   });
 });
