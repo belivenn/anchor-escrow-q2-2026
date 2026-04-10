@@ -95,13 +95,13 @@ Let´s have a closer look at the accounts that we are passing in this context:
 
 - `maker_ata_a`:  The Associated Token Account that holds the token_a of the maker. This will be mutable as the assets are being transferred from this account.
 
-- `vault`: This is an Associated Token Account to hold the token_a transferred from the maker, and hold by the escrow agent, until the agreement is completed and the assets are either sent to the taker or refunded back to the maker. This account will be created and payed by the maker, but the escrow will hold the authority on the funds.
+- `vault`: This is an Associated Token Account to hold the token_a transferred from the maker, and held by the escrow agent, until the agreement is completed and the assets are either sent to the taker or refunded back to the maker. This account will be created and paid by the maker, but the escrow will hold the authority on the funds.
 
-- `escrow`: The Escrow account will hold the state of the exchange agreement that we will initialize and that will be payed by the maker. We derive the Escrow PDA from the byte representation of the word "escrow" and the reference of the user public key. Anchor will calculate the canonical bump (the first bump that throws that address out of the ed25519 eliptic curve) and save it for us in a struct. 
+- `escrow`: The Escrow account will hold the state of the exchange agreement that we will initialize and that will be paid by the maker. We derive the Escrow PDA from the byte representation of the word "escrow" and the reference of the user public key. Anchor will calculate the canonical bump (the first bump that throws that address out of the Ed25519 elliptic curve) and save it for us in a struct. 
 
-- `token_program`: The associated token program.
+- `token_program`: The token program.
 
-- `associated_token_program`: The token program.
+- `associated_token_program`: The associated token program.
 
 - `system_program`: The system program. Program responsible for the initialization of any new account.
 
@@ -126,21 +126,21 @@ impl<'info> Make<'info> {
     //Deposit tokens from maker to vault
     pub fn deposit(&mut self, deposit: u64) -> Result<()> {
 
-        let tranfer_accounts = TransferChecked {
+        let transfer_accounts = TransferChecked {
             from: self.maker_ata_a.to_account_info(),
             mint: self.mint_a.to_account_info(),
             to: self.vault.to_account_info(),
             authority: self.maker.to_account_info()
         };
 
-        let cpi_ctx = CpiContext::new(self.token_program.key(), tranfer_accounts);
+        let cpi_ctx = CpiContext::new(self.token_program.key(), transfer_accounts);
 
         transfer_checked(cpi_ctx, deposit, self.mint_a.decimals)
     }
 }
 ```
 
-In the `init_escrow` function, we initialize the escrow account. In this case, as we are using the `set_inner`, to set the data content.
+In the `init_escrow` function, we initialize the escrow account. In this case, we use `set_inner`, to set the account data
 
 In the `deposit` function, we transfer tokens from the maker's associated token account to the vault account. 
 ---
@@ -217,9 +217,10 @@ In this context, we are passing all the accounts that we need to transfer the to
 - `taker_ata_b`: The ATA of the taker from which the tokens of token_b is being transferred from. It needs to be mutable.
 
 - `escrow`: The Escrow account that holds the state of the exchange agreement. In this example, we will be using the has_one constraint to validate the maker and the mints.
-- `token_program`: The associated token program.
 
-- `associated_token_program`: The token program.
+- `token_program`: The token program.
+
+- `associated_token_program`: The associated token program.
 
 - `system_program`: The system program.
 
@@ -332,9 +333,7 @@ In this context, we are passing all the accounts that we need to refund the fund
 
 - `escrow`: The Escrow account that holds the state of the exchange agreement.
 
-- `token_program`: The associated token program.
-
-- `associated_token_program`: The token program.
+- `token_program`: The token program.
 
 - `system_program`: The system program.
 

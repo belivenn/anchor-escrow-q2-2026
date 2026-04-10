@@ -64,14 +64,14 @@ impl<'info> Make<'info> {
     //Deposit tokens from maker to vault
     pub fn deposit(&mut self, deposit: u64) -> Result<()> {
 
-        let tranfer_accounts = TransferChecked {
+        let transfer_accounts = TransferChecked {
             from: self.maker_ata_a.to_account_info(),
             mint: self.mint_a.to_account_info(),
             to: self.vault.to_account_info(),
             authority: self.maker.to_account_info()
         };
 
-        let cpi_ctx = CpiContext::new(self.token_program.key(), tranfer_accounts);
+        let cpi_ctx = CpiContext::new(self.token_program.key(), transfer_accounts);
 
         transfer_checked(cpi_ctx, deposit, self.mint_a.decimals)
     }
