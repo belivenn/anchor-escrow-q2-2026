@@ -97,7 +97,7 @@ Let´s have a closer look at the accounts that we are passing in this context:
 
 - `vault`: This is an Associated Token Account to hold the token_a transferred from the maker, and hold by the escrow agent, until the agreement is completed and the assets are either sent to the taker or refunded back to the maker. This account will be created and payed by the maker, but the escrow will hold the authority on the funds.
 
-- `escrow`: The Escrow account will hold the state of the exchange agreement that we will initialize and that will be payed by the maker. We derive the Escrow PDA from the byte representation of the word "escrow" and the reference of the user public key. Anchor will calculate the canonical bump (the first bump that throws that address out of the ed25519 eliptic curve) and save it for us in a struct. In this example, we will be using the `LazyAccount` as the account type.
+- `escrow`: The Escrow account will hold the state of the exchange agreement that we will initialize and that will be payed by the maker. We derive the Escrow PDA from the byte representation of the word "escrow" and the reference of the user public key. Anchor will calculate the canonical bump (the first bump that throws that address out of the ed25519 eliptic curve) and save it for us in a struct. 
 
 - `token_program`: The associated token program.
 
