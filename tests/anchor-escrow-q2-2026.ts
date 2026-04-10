@@ -177,7 +177,7 @@ describe("anchor-escrow-q2-2026", () => {
 
   });
 
-  xit("Refund!", async () => {
+  it("Refund!", async () => {
 
     const tx = await program.methods.refund(
     ).accountsPartial({
