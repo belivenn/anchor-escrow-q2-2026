@@ -48,7 +48,7 @@ pub struct Make<'info> {
 }
 impl<'info> Make<'info> {
     //Initialize escrow
-    pub fn init_escrow(&mut self, seed: u64, receive: u64, bumps: &MakeBumps) -> Result<()> {
+    pub fn init_escrow(&mut self, seed: u64, receive: u64, bumps: &MakeBumps, expiration: i64) -> Result<()> {
 
         self.escrow.set_inner(Escrow {
             seed,
@@ -56,7 +56,8 @@ impl<'info> Make<'info> {
             mint_a: self.mint_a.key(),
             mint_b: self.mint_b.key(),
             receive: receive,
-            bump: bumps.escrow
+            bump: bumps.escrow,
+            expiration: expiration,
         });
         Ok(())
     }

@@ -80,7 +80,7 @@ mod tests {
         msg!("Vault PDA: {}\n", vault);
 
         // Mint 1,000 tokens (with 6 decimal places) of Mint A to the maker's associated token account
-        MintTo::new(&mut program, &payer, &mint_a, &maker_ata_a, 1000000000)
+        MintTo::new(&mut program, &payer, &mint_a, &maker_ata_a, 1000_000_000)
             .send()
             .unwrap();
 
@@ -100,9 +100,10 @@ mod tests {
             }
             .to_account_metas(None),
             data: anchor_escrow_q2_2026::instruction::Make {
-                deposit: 10,
+                deposit: 10_000_000,
                 seed: 123u64,
-                receive: 10,
+                receive: 10_000_000,
+                expiration: 17780206209,
             }
             .data(),
         };
@@ -124,7 +125,7 @@ mod tests {
         // Verify the vault account and escrow account data after the "Make" instruction
         let vault_account = program.get_account(&vault).unwrap();
         let vault_data = spl_token::state::Account::unpack(&vault_account.data).unwrap();
-        assert_eq!(vault_data.amount, 10);
+        assert_eq!(vault_data.amount, 10_000_000);
         assert_eq!(vault_data.owner, escrow);
         assert_eq!(vault_data.mint, mint_a);
 
@@ -137,7 +138,7 @@ mod tests {
         assert_eq!(escrow_data.maker, maker);
         assert_eq!(escrow_data.mint_a, mint_a);
         assert_eq!(escrow_data.mint_b, mint_b);
-        assert_eq!(escrow_data.receive, 10);
+        assert_eq!(escrow_data.receive, 10_000_000);
 
         // Create the "Refund" instruction to refund tokens back to the maker
         let refund_ix = Instruction {
@@ -165,7 +166,7 @@ mod tests {
         let tx = program.send_transaction(transaction).unwrap();
 
         // Log transaction details
-        msg!("\n\nMake transaction sucessfull");
+        msg!("\n\nRefund transaction sucessful");
         msg!("CUs Consumed: {}", tx.compute_units_consumed);
         msg!("Tx Signature: {}", tx.signature);
         assert!(program.get_account(&escrow).is_none());
@@ -239,11 +240,11 @@ mod tests {
         msg!("Vault PDA: {}\n", vault);
 
         // Mint 1,000 tokens (with 6 decimal places) of Mint A to the maker's associated token account
-        MintTo::new(&mut program, &payer, &mint_a, &maker_ata_a, 1000000000)
+        MintTo::new(&mut program, &payer, &mint_a, &maker_ata_a, 1000_000_000)
             .send()
             .unwrap();
         // Mint 1,000 tokens (with 6 decimal places) of Mint B to the takers's associated token account
-        MintTo::new(&mut program, &payer, &mint_b, &taker_ata_b, 1000000000)
+        MintTo::new(&mut program, &payer, &mint_b, &taker_ata_b, 1000_000_000)
             .send()
             .unwrap();
 
@@ -263,9 +264,10 @@ mod tests {
             }
             .to_account_metas(None),
             data: anchor_escrow_q2_2026::instruction::Make {
-                deposit: 10,
+                deposit: 10_000_000,
                 seed: 123u64,
-                receive: 10,
+                receive: 10_000_000,
+                expiration: 3600,
             }
             .data(),
         };
@@ -287,7 +289,7 @@ mod tests {
         // Verify the vault account and escrow account data after the "Make" instruction
         let vault_account = program.get_account(&vault).unwrap();
         let vault_data = spl_token::state::Account::unpack(&vault_account.data).unwrap();
-        assert_eq!(vault_data.amount, 10);
+        assert_eq!(vault_data.amount, 10_000_000);
         assert_eq!(vault_data.owner, escrow);
         assert_eq!(vault_data.mint, mint_a);
 
@@ -300,7 +302,13 @@ mod tests {
         assert_eq!(escrow_data.maker, maker);
         assert_eq!(escrow_data.mint_a, mint_a);
         assert_eq!(escrow_data.mint_b, mint_b);
-        assert_eq!(escrow_data.receive, 10);
+        assert_eq!(escrow_data.receive, 10_000_000);
+
+        let mut clock = program.get_sysvar::<anchor_lang::prelude::Clock>();
+
+        clock.unix_timestamp += 3599;
+
+        program.set_sysvar(&clock);
 
         // Create the "Take" instruction to execute the trade and close the escrow
         let take_ix = Instruction {

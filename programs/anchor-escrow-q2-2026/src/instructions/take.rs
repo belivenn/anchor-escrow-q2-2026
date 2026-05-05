@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface, TransferChecked, transfer_checked, CloseAccount, close_account}};
 
-use crate::{ESCROW_SEED, state::Escrow};
+use crate::{ESCROW_SEED, error::ErrorCode, state::Escrow};
 
 #[derive(Accounts)]
 pub struct Take<'info> {
@@ -53,6 +53,11 @@ pub struct Take<'info> {
 }
 
 impl<'info> Take<'info> {
+    // Check if the escrow has expired
+    pub fn check_expiration(&self) -> Result<()> {
+        require!(Clock::get()?.unix_timestamp < self.escrow.expiration , ErrorCode::EscrowExpired);
+        Ok(())
+    }
     //Deposit tokens from taker to maker
     pub fn deposit(&mut self) -> Result<()> {
 
